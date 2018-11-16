@@ -5,14 +5,15 @@
 }
 
 <h2>Lista Clientes</h2>
-<table class="table table-bordered table-hover">
+<h2>@Html.ActionLink("Nuevo Cliente", "Nueva", "Clientes")</h2>
+
+<table id="clientes" class="table table-bordered table-hover">
     <thead>
         <tr>
             <th>Nombre</th>
             <th>Apellido</th>
-            <th>Salario</th>
-            <th>Activo</th>
-
+            <th>Borrar</th>
+           
         </tr>
     </thead>
 
@@ -20,22 +21,46 @@
         @foreach (var cliente in Model)
         {
             <tr>
-
-                <td>@cliente.Nombre</td>
+                <td>@Html.ActionLink(cliente.Nombre, "Edit", "Clientes", new { id = cliente.ID }, null)</td>
+                @*<td>@cliente.Nombre</td>*@
                 <td>@cliente.Apellido</td>
-                <td>@cliente.Salario</td>
+                <!--<td>@Html.ActionLink("Eliminar","Eliminar","Clientes", new { id = cliente.ID },null)</td>-->
 
-                @if (cliente.Activo == true)
-                {
-                    <td>Activo</td>
-                }
-                else
-                {
-                    <td>Inactivo</td>
-                }
+                <td>
+                    <button data-customer-id="@cliente.ID" class="btn-link js-delete">Borrar</button>
+                </td>
+                @*<td>@cliente.Salario</td>
+                    if (@cliente.Activo == true)
+                    {
+                        <td>"Activo"</td>
+                    }
+                    else
+                    {
+                       <td>"Inactivo"</td>
+                    }*@
             </tr>
         }
     </tbody>
 </table>
 
+@section scripts
+    {
+    <script>
+        $(document).ready(function () {
+            $("#clientes").DataTable();
 
+            $("#clientes").on("click", ".js-delete", function () {
+                var button = $(this);
+                if (confirm("Seguro")) {
+                    $.ajax({
+                        url: "/clientes/Eliminar/" + button.attr("data-customer-id"),
+
+                        success: function () {
+                            button.parents("tr").remove();
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+}
